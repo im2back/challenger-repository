@@ -2,7 +2,7 @@ package github.io.im2back.challenger.model.user;
 
 
 import github.io.im2back.challenger.model.carteira.Carteira;
-import github.io.im2back.challenger.model.user.dtos.DadosCadastroUsuario;
+import github.io.im2back.challenger.model.user.dtos.DadosCadastroUsuarioRequest;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -42,7 +42,7 @@ public class Usuario {
 	
 	@JoinColumn(name="carteira_id")
 	@OneToOne(cascade = CascadeType.ALL)
-	private Carteira carteira;
+	private Carteira carteira = new Carteira();
 	
 	public Usuario(TipodeUsuario tipoDeUsuario, String nomeCompleto, String cpf, String email, String senha) {
 		super();
@@ -54,7 +54,7 @@ public class Usuario {
 		
 	}
 	
-	public Usuario (DadosCadastroUsuario dados) {
+	public Usuario (DadosCadastroUsuarioRequest dados) {
 		this.tipoDeUsuario = dados.tipoDeUsuario();
 		this.nomeCompleto = dados.nomeCompleto();
 		this.cpf = dados.cpf();

@@ -7,7 +7,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
-public record DadosCadastroUsuario(
+public record DadosCadastroUsuarioRequest(
 		
 		@NotNull
 		TipodeUsuario tipoDeUsuario,
