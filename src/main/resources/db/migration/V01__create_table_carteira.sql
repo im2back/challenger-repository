@@ -1,0 +1,4 @@
+CREATE TABLE tb_carteira (
+    id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    saldo DECIMAL(10, 2) DEFAULT 0.00
+);

@@ -11,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 import lombok.EqualsAndHashCode;
@@ -30,6 +31,7 @@ public class Usuario {
 	private Long id;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(name = "tipo")
 	private TipodeUsuario tipoDeUsuario;
 	
 	@Column(name = "nome")
@@ -38,6 +40,7 @@ public class Usuario {
 	private String email; 
 	private String senha;
 	
+	@JoinColumn(name="carteira_id")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Carteira carteira;
 	

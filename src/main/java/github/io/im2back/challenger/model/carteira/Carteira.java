@@ -20,6 +20,7 @@ public class Carteira{
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
+	
 	private BigDecimal saldo = new BigDecimal(0);
 	
 	public void receber(BigDecimal quantia) {
