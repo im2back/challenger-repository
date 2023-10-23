@@ -1,6 +1,8 @@
 package github.io.im2back.challenger.model.transacao;
 
-import github.io.im2back.challenger.model.user.Usuario;
+import java.math.BigDecimal;
+
+import github.io.im2back.challenger.model.carteira.Carteira;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -8,13 +10,12 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AllArgsConstructor;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-@AllArgsConstructor
+
 @NoArgsConstructor
 @Getter
 @Setter
@@ -26,13 +27,27 @@ public class Transacao {
 	@Id @GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 	
-	@ManyToOne
-	@JoinColumn(name="carteiraRaiz_id")
-	private Usuario contaRaiz;
+	private BigDecimal valor;
 	
 	@ManyToOne
-	@JoinColumn(name="carteiraDestino_id")
-	private Usuario contaDestino;
+	@JoinColumn(name="carteiraPagante_id")
+	private Carteira carteiraRaiz;
+	
+	@ManyToOne
+	@JoinColumn(name="carteiraRecebedor_id")
+	private Carteira carteiraDestino;
 
+	public Transacao(BigDecimal valor, Carteira carteiraRaiz, Carteira carteiraDestino) {
+		super();
+		this.valor = valor;
+		this.carteiraRaiz = carteiraRaiz;
+		this.carteiraDestino = carteiraDestino;
+	}
+
+	
+
+
+
+	
 
 }

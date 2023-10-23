@@ -1,7 +1,9 @@
 CREATE TABLE tb_transacao (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    carteiraRaiz_id INT,
-    carteiraDestino_id INT,
-    FOREIGN KEY (carteiraRaiz_id) REFERENCES tb_user(id),
-    FOREIGN KEY (carteiraDestino_id) REFERENCES tb_user(id)
+    valor DECIMAL (10, 2),
+    carteiraPagante_id BIGINT,
+    carteiraRecebedor_id BIGINT,
+    
+    FOREIGN KEY (carteiraPagante_id) REFERENCES tb_carteira(id),
+    FOREIGN KEY (carteiraRecebedor_id) REFERENCES tb_carteira(id)
 );

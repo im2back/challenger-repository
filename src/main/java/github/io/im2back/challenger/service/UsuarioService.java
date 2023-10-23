@@ -21,4 +21,8 @@ public class UsuarioService {
 		return response;
 	}
 	
+	public Usuario findById(Long id) {
+		return repository.findById(id).get();
+	}
+	
 }
