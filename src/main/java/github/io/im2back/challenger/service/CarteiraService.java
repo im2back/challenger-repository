@@ -14,7 +14,6 @@ import github.io.im2back.challenger.model.transacao.TransacaoDTORequest;
 import github.io.im2back.challenger.model.transacao.TransacaoDTOResponse;
 import github.io.im2back.challenger.model.util.CarteiraTransacaoPair;
 import github.io.im2back.challenger.repositories.CarteiraRepository;
-import github.io.im2back.challenger.repositories.TransacaoRepository;
 
 @Service
 public class CarteiraService {
@@ -23,7 +22,7 @@ public class CarteiraService {
 	private CarteiraRepository repository;
 	
 	@Autowired
-	private TransacaoRepository transacaoRepository;
+	private TransacaoService transacaoService;
 	
 	@Autowired
 	private UsuarioService usuarioService;
@@ -73,7 +72,7 @@ public class CarteiraService {
 				
 				//salvo um registro da transação no banco de dados
 				Transacao trans = new Transacao(dados.amount(), carteiraPagante, carteiraRecebedor);
-				transacaoRepository.save(trans);
+				transacaoService.save(trans);
 				
 				CarteiraTransacaoPair carteiraTransacaoPair = new CarteiraTransacaoPair(carteiraPagante, carteiraRecebedor, trans);
 				
