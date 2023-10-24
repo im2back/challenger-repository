@@ -26,6 +26,12 @@ Obs : o mock disponibilizado foi desativado, por isso tive que criar novos.
 
 ## Diagrama do projeto
 ![Mapa](https://github.com/im2back/challenger-repository/assets/117541466/ec551fea-8be4-4edb-9894-af4f45cf1361)
+<br>
+<br>
+<br>
+## Documentação utilizando o Swagger.
+http://localhost:8080/swagger-ui/index.html#/carteira-controller
+![image](https://github.com/im2back/challenger-repository/assets/117541466/a0a18530-85ea-4fd8-b41f-37cb78ba130f)
 
 
 # Tecnologias utilizadas
