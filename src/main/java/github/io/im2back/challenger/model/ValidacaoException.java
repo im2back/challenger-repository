@@ -1,4 +1,4 @@
-package github.io.im2back.challenger.model.validacoes;
+package github.io.im2back.challenger.model;
 
 public class ValidacaoException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
