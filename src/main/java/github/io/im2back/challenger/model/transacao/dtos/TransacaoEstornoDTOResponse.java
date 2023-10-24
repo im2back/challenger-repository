@@ -7,7 +7,8 @@ public record TransacaoEstornoDTOResponse(
 		String message,
 		Long idCarteiraPagante,
 		Long idCarteiraRecebedor,
-		BigDecimal valorEstornado
+		BigDecimal valorEstornado,
+		String notificacao
 		) {
 	
 

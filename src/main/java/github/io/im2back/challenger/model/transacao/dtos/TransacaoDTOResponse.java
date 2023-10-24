@@ -6,7 +6,8 @@ public record TransacaoDTOResponse(
 		Long idTransacao,
 		Long idCarteiraPagante,
 		Long idCarteiraRecebedor,
-		BigDecimal valor
+		BigDecimal valor,
+		String notificacao
 		) {
 
 }

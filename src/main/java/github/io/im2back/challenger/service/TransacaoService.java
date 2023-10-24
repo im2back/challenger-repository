@@ -35,7 +35,7 @@ public class TransacaoService {
 		try {
 			@SuppressWarnings("rawtypes")
 			ResponseEntity<Map> authorizationResponse = restTemplate
-					.getForEntity("https://run.mocky.io/v3/ab9e31c0-3f16-4367-b319-c346a21b41ec", Map.class);
+					.getForEntity("https://run.mocky.io/v3/e8785181-c5dc-44cc-9dfa-1d77aa9bf478", Map.class);
 
 			if (authorizationResponse.getStatusCode() == HttpStatus.OK) {
 				String message = (String) authorizationResponse.getBody().get("message");

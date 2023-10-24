@@ -2,14 +2,14 @@ package github.io.im2back.challenger.model.transacao.dtos;
 
 import java.math.BigDecimal;
 
-import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 public record TransacaoDTORequest(
-		@NotBlank
+		@NotNull
 		Long idPagante,
-		@NotBlank
+		@NotNull
 		Long idRecebedor,
-		@NotBlank
+		@NotNull
 		BigDecimal amount
 		) {
 
