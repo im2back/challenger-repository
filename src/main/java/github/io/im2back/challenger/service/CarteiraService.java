@@ -39,11 +39,9 @@ public class CarteiraService {
 		/* recupero os usuarios e suas carteiras e inicío a trasnferencia */
 		CarteiraTransacaoPair carteiraTransacaoPair = recuperarEIniciarTransferencia(dados);
 
-		/*
-		 * antes de finalizar e salvar a operação de transferencia na database eu
-		 * consulto um serviço externo
-		 */
+		/* antes de finalizar e salvar a operação de transferencia na database eu consulto um serviço externo */
 		if (transacaoService.autorizarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {
+			
 			/*Se o autorizador externo der o aval eu salvo a operação no banco de dados*/
 			repository.saveAll(Arrays.asList(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor()));
 
