@@ -1,0 +1,18 @@
+package github.io.im2back.challenger.model.util;
+
+import github.io.im2back.challenger.model.carteira.Carteira;
+import github.io.im2back.challenger.model.transacao.Transacao;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
+
+@AllArgsConstructor
+@Getter
+@Setter
+public class CarteiraTransacaoPair {
+	
+	private Carteira carteiraPagante;
+	private Carteira carteiraRecebedor;
+	private Transacao transacao;
+
+}
