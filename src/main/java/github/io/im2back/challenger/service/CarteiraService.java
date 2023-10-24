@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import github.io.im2back.challenger.model.carteira.Carteira;
 import github.io.im2back.challenger.model.transacao.Transacao;
+import github.io.im2back.challenger.model.transacao.TransacaoDTORequest;
 import github.io.im2back.challenger.model.transacao.TransacaoDTOResponse;
 //import github.io.im2back.challenger.model.transacao.Transacao;
 import github.io.im2back.challenger.repositories.CarteiraRepository;
@@ -25,10 +26,10 @@ public class CarteiraService {
 	@Autowired
 	private UsuarioService usuarioService;
 	
-	public TransacaoDTOResponse enviarDinheiro(Long idPagante, Long idRecebedor, BigDecimal amount) {
+	public TransacaoDTOResponse enviarDinheiro(TransacaoDTORequest dados) {
 		//Localizo o usuario
-		var usuarioPagante = usuarioService.findById(idPagante);
-		var usuarioRecebedor = usuarioService.findById(idRecebedor);
+		var usuarioPagante = usuarioService.findById(dados.idPagante());
+		var usuarioRecebedor = usuarioService.findById(dados.idRecebedor());
 		
 		//Localizo e recupero a carteira dos usuarios envolvidos
 		var carteiraPagante = repository.findById(usuarioPagante.getCarteira().getId()).get();
@@ -37,21 +38,21 @@ public class CarteiraService {
 		//validações
 		
 		//Realizo as operações
-		carteiraPagante.transferir(amount);
-		carteiraRecebedor.receber(amount);
+		carteiraPagante.transferir(dados.amount());
+		carteiraRecebedor.receber(dados.amount());
 		
 		//salvo a transação no banco de dados
-		Transacao trans = new Transacao(amount, carteiraPagante, carteiraRecebedor);
+		Transacao trans = new Transacao(dados.amount(), carteiraPagante, carteiraRecebedor);
 		transacaoRepository.save(trans);
 		
 		//consulta o serviço externo antes de salvar a operação
 		
 		//chamo a operação incosistencia dependendo da resposta do serviço autorizador
-		inconsistencia(carteiraPagante, carteiraRecebedor, amount);
+		inconsistencia(carteiraPagante, carteiraRecebedor, dados.amount());
 		
 		repository.saveAll(Arrays.asList(carteiraPagante,carteiraRecebedor));
 		
-		return new TransacaoDTOResponse(trans.getId(), carteiraPagante.getId(), carteiraRecebedor.getId(),amount);
+		return new TransacaoDTOResponse(trans.getId(), carteiraPagante.getId(), carteiraRecebedor.getId(),dados.amount());
 		//envia recibo do pagamento
 	}
 	

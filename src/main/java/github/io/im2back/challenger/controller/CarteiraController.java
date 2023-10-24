@@ -23,7 +23,7 @@ public class CarteiraController {
 	@PutMapping
 	@Transactional
 	public ResponseEntity enviarGrana(@RequestBody @Valid TransacaoDTORequest dados){
-		var	response = service.enviarDinheiro(dados.idPagante(), dados.idRecebedor(), dados.amount());
+		var	response = service.enviarDinheiro(dados);
 		
 		return ResponseEntity.ok(response);
 	}
