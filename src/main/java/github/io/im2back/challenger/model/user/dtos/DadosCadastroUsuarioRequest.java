@@ -4,12 +4,11 @@ import github.io.im2back.challenger.model.user.TipodeUsuario;
 import jakarta.persistence.Column;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 
 public record DadosCadastroUsuarioRequest(
 		
-		@NotNull
+		@NotBlank
 		TipodeUsuario tipoDeUsuario,
 		
 		@Column(name = "nome")

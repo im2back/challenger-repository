@@ -31,6 +31,9 @@ public class CarteiraService {
 
 	@Autowired
 	private List<ValidadorCarteira> validadores;
+	
+	@Autowired
+	private NotificationService notificationService;
 
 	public Object enviarDinheiro(TransacaoDTORequest dados) {
 		/* execulto a lista das regras de negocio */
@@ -49,19 +52,19 @@ public class CarteiraService {
 			Transacao trans = new Transacao(dados.amount(), carteiraTransacaoPair.getCarteiraPagante(),
 					carteiraTransacaoPair.getCarteiraRecebedor(), TipoDaTransacao.FINALIZADA_CONCLUIDA);
 			transacaoService.save(trans);
+			
+			enviarNotificacao(dados, "Transação realizada com sucesso", "transferência recebida com sucesso");
 
 			// retorno um dto,para o end point, contendo os dados da transação
 			return new TransacaoDTOResponse(trans.getId(), carteiraTransacaoPair.getCarteiraPagante().getId(),
 					carteiraTransacaoPair.getCarteiraRecebedor().getId(), dados.amount());
 
 		} else {
-			/*
-			 * caso o serviço autorizador não autorize a operação, eu incosistencia que por
-			 * sua vez desfará as alterações
-			 */
+			/*caso o serviço autorizador não autorize a operação, eu  chamo o metodo incosistencia que por sua vez desfará as alterações */
 			Transacao trans = inconsistencia(carteiraTransacaoPair.getCarteiraPagante(),
 					carteiraTransacaoPair.getCarteiraRecebedor(), dados.amount());
 
+			enviarNotificacao(dados, "transferência falhou","falha no recebimento");
 			/* Por fim eu retorno um DTO compativel contendo os dados do estorno */
 			return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",
 					carteiraTransacaoPair.getCarteiraPagante().getId(),
@@ -83,6 +86,7 @@ public class CarteiraService {
 	}
 
 	private CarteiraTransacaoPair recuperarEIniciarTransferencia(TransacaoDTORequest dados) {
+
 		// Localizo o usuario
 		var usuarioPagante = usuarioService.findById(dados.idPagante());
 		var usuarioRecebedor = usuarioService.findById(dados.idRecebedor());
@@ -99,4 +103,14 @@ public class CarteiraService {
 
 		return carteiraTransacaoPair;
 	}
+
+	private void enviarNotificacao(TransacaoDTORequest dados, String msgPagante,String msgRecebedor) {
+		var usuarioPagante = usuarioService.findById(dados.idPagante());
+		var usuarioRecebedor = usuarioService.findById(dados.idRecebedor());
+		
+		notificationService.enviarNotificacao(usuarioPagante, msgPagante);
+		notificationService.enviarNotificacao(usuarioRecebedor, msgRecebedor);
+	}
 }
+
+
