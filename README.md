@@ -2,6 +2,7 @@
 [![NPM](https://img.shields.io/npm/l/react)](https://github.com/im2back/Voll.med/blob/main/LICENSE) 
 
 # Sobre o projeto(Proposta do desafio)
+### Link do desafio original :  https://github.com/PicPay/picpay-desafio-backend
 Temos 2 tipos de usuários, os comuns e lojistas, ambos têm carteira com dinheiro e realizam transferências entre eles. Vamos nos atentar somente ao fluxo de transferência entre dois usuários.
 
 Requisitos:
