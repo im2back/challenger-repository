@@ -39,6 +39,7 @@ public class CarteiraService {
 		var carteiraPagante = repository.findById(usuarioPagante.getCarteira().getId()).get();
 		var carteiraRecebedor = repository.findById(usuarioRecebedor.getCarteira().getId()).get();
 		
+		//execulto lista da interface com todas as validações
 		validadores.forEach(v -> v.validar(dados));
 		
 		//Realizo as operações
@@ -49,7 +50,7 @@ public class CarteiraService {
 		Transacao trans = new Transacao(dados.amount(), carteiraPagante, carteiraRecebedor);
 		transacaoRepository.save(trans);
 		
-		//consulta o serviço externo antes de salvar a operação
+		//antes de salvar a operação de transferencia eu consulto um serviço externo
 		
 		//chamo a operação incosistencia dependendo da resposta do serviço autorizador
 		//inconsistencia(carteiraPagante, carteiraRecebedor, dados.amount());
@@ -60,9 +61,14 @@ public class CarteiraService {
 		//envia recibo do pagamento
 	}
 	
+	@SuppressWarnings("unused")
 	private void inconsistencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {
 		recebedor.transferir(amount);
 		pagante.receber(amount);
+		
+		Transacao trans = new Transacao(amount, recebedor, pagante);
+		
+		// adicioanar uma coluna na tabela transferencia para conter o tipo da transacao, se é cancelamento ou concluida
 		
 	}
 
