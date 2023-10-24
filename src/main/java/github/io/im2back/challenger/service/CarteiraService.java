@@ -9,86 +9,96 @@ import org.springframework.stereotype.Service;
 
 import github.io.im2back.challenger.model.carteira.Carteira;
 import github.io.im2back.challenger.model.carteira.validacoes.ValidadorCarteira;
+import github.io.im2back.challenger.model.transacao.TipoDaTransacao;
 import github.io.im2back.challenger.model.transacao.Transacao;
-import github.io.im2back.challenger.model.transacao.TransacaoDTORequest;
-import github.io.im2back.challenger.model.transacao.TransacaoDTOResponse;
-import github.io.im2back.challenger.model.transacao.TransacaoEstornoDTOResponse;
+import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTORequest;
+import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTOResponse;
+import github.io.im2back.challenger.model.transacao.dtos.TransacaoEstornoDTOResponse;
 import github.io.im2back.challenger.model.util.CarteiraTransacaoPair;
 import github.io.im2back.challenger.repositories.CarteiraRepository;
 
 @Service
 public class CarteiraService {
-	
+
 	@Autowired
 	private CarteiraRepository repository;
-	
+
 	@Autowired
 	private TransacaoService transacaoService;
-	
+
 	@Autowired
 	private UsuarioService usuarioService;
-	
+
 	@Autowired
 	private List<ValidadorCarteira> validadores;
-	
+
 	public Object enviarDinheiro(TransacaoDTORequest dados) {
+		/* execulto a lista das regras de negocio */
 		validadores.forEach(v -> v.validar(dados));
+
+		/* recupero os usuarios e suas carteiras e inicío a trasnferencia */
 		CarteiraTransacaoPair carteiraTransacaoPair = recuperarEIniciarTransferencia(dados);
-		
-		/*Para fazer -> antes de finalizar e salvar a operação de transferencia na database eu consulto um serviço externo*/
-		if(transacaoService.validarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {	
-			
-			repository.saveAll(Arrays.asList(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor()));	
-			
-			return new TransacaoDTOResponse(carteiraTransacaoPair.getTransacao().getId(),carteiraTransacaoPair.getCarteiraPagante().getId(),
-					carteiraTransacaoPair.getCarteiraRecebedor().getId(),dados.amount());	
-			}	 
-		else  {
-			//chamo a operação incosistencia e desfaço as alterações dependendo da resposta do serviço autorizador
-			inconsistencia(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor(), dados.amount());
-			
-			return new TransacaoEstornoDTOResponse(carteiraTransacaoPair.getTransacao().getId(), "Falha na operação", carteiraTransacaoPair.getCarteiraPagante().getId(),
-					
-					carteiraTransacaoPair.getCarteiraRecebedor().getId(),dados.amount());
+
+		/*
+		 * antes de finalizar e salvar a operação de transferencia na database eu
+		 * consulto um serviço externo
+		 */
+		if (transacaoService.autorizarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {
+			/*Se o autorizador externo der o aval eu salvo a operação no banco de dados*/
+			repository.saveAll(Arrays.asList(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor()));
+
+			/* salvo um registro da transação no banco de dados caso essa codicional seja acionada*/
+			Transacao trans = new Transacao(dados.amount(), carteiraTransacaoPair.getCarteiraPagante(),
+					carteiraTransacaoPair.getCarteiraRecebedor(), TipoDaTransacao.FINALIZADA_CONCLUIDA);
+			transacaoService.save(trans);
+
+			// retorno um dto,para o end point, contendo os dados da transação
+			return new TransacaoDTOResponse(trans.getId(), carteiraTransacaoPair.getCarteiraPagante().getId(),
+					carteiraTransacaoPair.getCarteiraRecebedor().getId(), dados.amount());
+
+		} else {
+			/*
+			 * caso o serviço autorizador não autorize a operação, eu incosistencia que por
+			 * sua vez desfará as alterações
+			 */
+			Transacao trans = inconsistencia(carteiraTransacaoPair.getCarteiraPagante(),
+					carteiraTransacaoPair.getCarteiraRecebedor(), dados.amount());
+
+			/* Por fim eu retorno um DTO compativel contendo os dados do estorno */
+			return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",
+					carteiraTransacaoPair.getCarteiraPagante().getId(),
+					carteiraTransacaoPair.getCarteiraRecebedor().getId(), dados.amount());
 		}
-		
-			
+
 	}
-	
-	@SuppressWarnings("unused")
-	private void inconsistencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {	
-		//desfaz a operação
+
+	private Transacao inconsistencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {
+		// desfaz a operação
 		recebedor.transferir(amount);
 		pagante.receber(amount);
-		
-		// instancia uma transação de estorno
-		Transacao trans = new Transacao(amount, recebedor, pagante);
-		/*Adicioanr um melhoramento na classe Transacao. Adicionar um enum contendo o Status da transacao,
-		 após isso adicionar um retorno desse tipo no metodo enviar dinheiro nesse caso se é estorno ou concluida*/
-		
+
+		// após desfazer a operação eu instancio um objeto Transacao para ser armazenado
+		Transacao trans = new Transacao(amount, recebedor, pagante, TipoDaTransacao.CANCELADA_ESTORNADA);
+		transacaoService.save(trans);
+
+		return trans;
 	}
 
 	private CarteiraTransacaoPair recuperarEIniciarTransferencia(TransacaoDTORequest dados) {
-		//Localizo o usuario
-				var usuarioPagante = usuarioService.findById(dados.idPagante());
-				var usuarioRecebedor = usuarioService.findById(dados.idRecebedor());
-				
-				//Localizo e recupero a carteira dos usuarios envolvidos
-				var carteiraPagante = repository.findById(usuarioPagante.getCarteira().getId()).get();
-				var carteiraRecebedor = repository.findById(usuarioRecebedor.getCarteira().getId()).get();
-				
-				//Realizo as operações
-				carteiraPagante.transferir(dados.amount());
-				carteiraRecebedor.receber(dados.amount());
-				
-				//salvo um registro da transação no banco de dados
-				Transacao trans = new Transacao(dados.amount(), carteiraPagante, carteiraRecebedor);
-				transacaoService.save(trans);
-				
-				CarteiraTransacaoPair carteiraTransacaoPair = new CarteiraTransacaoPair(carteiraPagante, carteiraRecebedor, trans);
-				
-				
-				
-				return carteiraTransacaoPair;
+		// Localizo o usuario
+		var usuarioPagante = usuarioService.findById(dados.idPagante());
+		var usuarioRecebedor = usuarioService.findById(dados.idRecebedor());
+
+		// Localizo e recupero a carteira dos usuarios envolvidos
+		var carteiraPagante = repository.findById(usuarioPagante.getCarteira().getId()).get();
+		var carteiraRecebedor = repository.findById(usuarioRecebedor.getCarteira().getId()).get();
+
+		// Realizo as operações
+		carteiraPagante.transferir(dados.amount());
+		carteiraRecebedor.receber(dados.amount());
+
+		CarteiraTransacaoPair carteiraTransacaoPair = new CarteiraTransacaoPair(carteiraPagante, carteiraRecebedor);
+
+		return carteiraTransacaoPair;
 	}
 }

@@ -1,4 +1,4 @@
-package github.io.im2back.challenger.model.transacao;
+package github.io.im2back.challenger.model.transacao.dtos;
 
 import java.math.BigDecimal;
 

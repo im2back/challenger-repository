@@ -3,7 +3,7 @@ package github.io.im2back.challenger.model.carteira.validacoes;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import github.io.im2back.challenger.model.transacao.TransacaoDTORequest;
+import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTORequest;
 import github.io.im2back.challenger.model.user.TipodeUsuario;
 import github.io.im2back.challenger.model.util.ValidacaoException;
 import github.io.im2back.challenger.repositories.UsuarioRepository;
