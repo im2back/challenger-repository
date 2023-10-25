@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTORequest;
 import github.io.im2back.challenger.service.CarteiraService;
 import jakarta.transaction.Transactional;
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping(value = "carteira")
@@ -21,7 +22,8 @@ public class CarteiraController {
 	
 	@PutMapping("/transferencia")
 	@Transactional
-	public ResponseEntity<Object> enviarGrana(@RequestBody   TransacaoDTORequest dados){
+	public ResponseEntity<Object> enviarGrana(@RequestBody @Valid TransacaoDTORequest dados){
+		System.out.println(dados.idPagante()+"  = IMPRIMINDO DADOS = "+dados.idRecebedor());
 		var	response = service.enviarDinheiro(dados);
 			
 		return ResponseEntity.ok(response);

@@ -17,12 +17,13 @@ public class UsuarioService {
 	public DadosCadastroUsuarioResponse saveNewUser(DadosCadastroUsuarioRequest dados) {
 		Usuario usuario = new Usuario(dados);
 		repository.save(usuario);
-		DadosCadastroUsuarioResponse response = new DadosCadastroUsuarioResponse(dados,usuario.getId());	
+		DadosCadastroUsuarioResponse response = new DadosCadastroUsuarioResponse(dados,usuario.getId(),usuario.getCarteira().getId());	
 		return response;
 	}
 	
 	public Usuario findById(Long id) {
-		return repository.findById(id).get();
+			Usuario user = repository.getReferenceById(id);
+			return user;
 	}
 	
 }
