@@ -14,17 +14,17 @@ import github.io.im2back.challenger.service.UsuarioService;
 import jakarta.transaction.Transactional;
 
 @RestController
-@RequestMapping(value = "users")
+@RequestMapping(value = "usuarios")
 public class UsuarioController {
 	
 	@Autowired	private UsuarioService service;
 
-	@PostMapping
+	@PostMapping("/cadastrar")
 	@Transactional
 	ResponseEntity<DadosCadastroUsuarioResponse> insertNewUser(@RequestBody DadosCadastroUsuarioRequest dados,UriComponentsBuilder uriBuilder){
 		 DadosCadastroUsuarioResponse response =  service.saveNewUser(dados);
 		 
-		 var uri = uriBuilder.path("/users/{id}").buildAndExpand(response.id()).toUri();
+		 var uri = uriBuilder.path("/usuarios/{id}").buildAndExpand(response.id()).toUri();
 		
 		return ResponseEntity.created(uri).body(response);
 		

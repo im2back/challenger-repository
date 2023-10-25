@@ -18,10 +18,10 @@ public class CarteiraController {
 	@Autowired
 	private CarteiraService service;
 	
-	@SuppressWarnings("rawtypes")
-	@PutMapping
+	
+	@PutMapping("/transferencia")
 	@Transactional
-	public ResponseEntity enviarGrana(@RequestBody   TransacaoDTORequest dados){
+	public ResponseEntity<Object> enviarGrana(@RequestBody   TransacaoDTORequest dados){
 		var	response = service.enviarDinheiro(dados);
 			
 		return ResponseEntity.ok(response);
