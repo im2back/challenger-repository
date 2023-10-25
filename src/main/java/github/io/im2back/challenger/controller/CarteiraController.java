@@ -23,7 +23,7 @@ public class CarteiraController {
 	@PutMapping("/transferencia")
 	@Transactional
 	public ResponseEntity<Object> enviarGrana(@RequestBody @Valid TransacaoDTORequest dados){
-		System.out.println(dados.idPagante()+"  = IMPRIMINDO DADOS = "+dados.idRecebedor());
+		
 		var	response = service.enviarDinheiro(dados);
 			
 		return ResponseEntity.ok(response);

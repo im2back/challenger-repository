@@ -40,6 +40,7 @@ public class Usuario {
 	private String email; 
 	private String senha;
 	
+	
 	@JoinColumn(name="carteira_id")
 	@OneToOne(cascade = CascadeType.ALL)
 	private Carteira carteira = new Carteira();
