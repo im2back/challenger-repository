@@ -6,8 +6,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import github.io.im2back.challenger.infra.util.NotificationDTO;
 import github.io.im2back.challenger.model.user.Usuario;
-import github.io.im2back.challenger.model.util.NotificationDTO;
 
 @Service
 public class NotificationService {

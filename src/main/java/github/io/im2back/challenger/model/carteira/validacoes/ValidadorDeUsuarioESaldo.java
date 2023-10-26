@@ -5,9 +5,9 @@ import java.math.BigDecimal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import github.io.im2back.challenger.infra.util.ValidacaoException;
 import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTORequest;
 import github.io.im2back.challenger.model.user.Usuario;
-import github.io.im2back.challenger.model.util.ValidacaoException;
 import github.io.im2back.challenger.repositories.UsuarioRepository;
 
 @Component

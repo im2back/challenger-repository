@@ -1,4 +1,4 @@
-package github.io.im2back.challenger.infra.exception.configs;
+package github.io.im2back.challenger.infra.configs;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

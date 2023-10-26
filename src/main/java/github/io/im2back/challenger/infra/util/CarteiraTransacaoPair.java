@@ -1,4 +1,4 @@
-package github.io.im2back.challenger.model.util;
+package github.io.im2back.challenger.infra.util;
 
 import github.io.im2back.challenger.model.carteira.Carteira;
 import lombok.AllArgsConstructor;

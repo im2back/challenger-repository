@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import github.io.im2back.challenger.infra.util.CarteiraTransacaoPair;
 import github.io.im2back.challenger.model.carteira.Carteira;
 import github.io.im2back.challenger.model.carteira.validacoes.ValidadorCarteira;
 import github.io.im2back.challenger.model.transacao.TipoDaTransacao;
@@ -14,7 +15,6 @@ import github.io.im2back.challenger.model.transacao.Transacao;
 import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTORequest;
 import github.io.im2back.challenger.model.transacao.dtos.TransacaoDTOResponse;
 import github.io.im2back.challenger.model.transacao.dtos.TransacaoEstornoDTOResponse;
-import github.io.im2back.challenger.model.util.CarteiraTransacaoPair;
 import github.io.im2back.challenger.repositories.CarteiraRepository;
 
 @Service
@@ -45,13 +45,12 @@ public class CarteiraService {
 		
 		/* antes de finalizar e salvar a operação de transferencia na database eu consulto um serviço externo */
 		if (transacaoService.autorizarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {
-			
+	
 			/*Se o autorizador externo der o aval eu salvo a operação no banco de dados*/
 			repository.saveAll(Arrays.asList(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor()));
 
 			/* salvo um registro da transação no banco de dados caso essa codicional seja acionada*/
-			Transacao trans = new Transacao(dados.amount(), carteiraTransacaoPair.getCarteiraPagante(),
-					carteiraTransacaoPair.getCarteiraRecebedor(), TipoDaTransacao.FINALIZADA_CONCLUIDA);
+			Transacao trans = new Transacao(dados.amount(), carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor(), TipoDaTransacao.FINALIZADA_CONCLUIDA);
 			transacaoService.save(trans);
 			
 			String msgNotificacao = enviarNotificacao(dados, "Transação realizada com sucesso", "transferência recebida com sucesso");
@@ -65,7 +64,7 @@ public class CarteiraService {
 			Transacao trans = inconsistencia(carteiraTransacaoPair.getCarteiraPagante(),
 					carteiraTransacaoPair.getCarteiraRecebedor(), dados.amount());
 
-			String msgNotificacao =enviarNotificacao(dados, "transferência falhou","falha no recebimento");
+			String msgNotificacao = enviarNotificacao(dados, "transferência falhou","falha no recebimento");
 			
 			/* Por fim eu retorno um DTO compativel contendo os dados do estorno */
 			return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",
