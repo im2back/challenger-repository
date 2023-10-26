@@ -8,7 +8,7 @@ import lombok.Setter;
 @AllArgsConstructor
 @Getter
 @Setter
-public class CarteiraTransacaoPair {
+public class CarteiraTransacaoCarteiras {
 	
 	private Carteira carteiraPagante;
 	private Carteira carteiraRecebedor;

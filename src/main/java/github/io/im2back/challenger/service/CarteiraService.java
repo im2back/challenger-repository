@@ -7,7 +7,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import github.io.im2back.challenger.infra.util.CarteiraTransacaoPair;
+import github.io.im2back.challenger.infra.util.CarteiraTransacaoCarteiras;
 import github.io.im2back.challenger.model.carteira.Carteira;
 import github.io.im2back.challenger.model.carteira.validacoes.ValidadorCarteira;
 import github.io.im2back.challenger.model.transacao.TipoDaTransacao;
@@ -37,21 +37,20 @@ public class CarteiraService {
 
 	public Object enviarDinheiro(TransacaoDTORequest dados) {
 		validadores.forEach(v -> v.validar(dados));
-		CarteiraTransacaoPair carteiraTransacaoPair = recuperarEIniciarTransferencia(dados);
+		CarteiraTransacaoCarteiras carteiraTransacaoCarteiras = recuperarEIniciarTransferencia(dados);
 		
 		/* antes de finalizar e salvar a operação de transferencia na database eu consulto um serviço externo */
-		if (transacaoService.autorizarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {
-				Transacao trans = respostaPositivaFinalizarTransferencia(carteiraTransacaoPair, dados);	
+		if (transacaoService.autorizarTransacao(carteiraTransacaoCarteiras.getCarteiraPagante(), dados.amount()) == true) {
+				Transacao trans = respostaPositivaFinalizarTransferencia(carteiraTransacaoCarteiras, dados);	
 						String msgNotificacao = enviarNotificacao(dados, "Transação realizada com sucesso", "transferência recebida com sucesso");
-							return new TransacaoDTOResponse(trans.getId(), carteiraTransacaoPair.getCarteiraPagante().getId(),
-									carteiraTransacaoPair.getCarteiraRecebedor().getId(), dados.amount(), msgNotificacao );
+							return new TransacaoDTOResponse(trans.getId(), carteiraTransacaoCarteiras.getCarteiraPagante().getId(),
+									carteiraTransacaoCarteiras.getCarteiraRecebedor().getId(), dados.amount(), msgNotificacao );
 		} else {
-			Transacao trans = inconsistencia(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor(), dados.amount());
+			Transacao trans = inconsistencia(carteiraTransacaoCarteiras.getCarteiraPagante(),carteiraTransacaoCarteiras.getCarteiraRecebedor(), dados.amount());
 				String msgNotificacao = enviarNotificacao(dados, "transferência falhou","falha no recebimento");
-						return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",carteiraTransacaoPair.getCarteiraPagante().getId(),
-						carteiraTransacaoPair.getCarteiraRecebedor().getId(), dados.amount(),msgNotificacao);
+						return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",carteiraTransacaoCarteiras.getCarteiraPagante().getId(),
+						carteiraTransacaoCarteiras.getCarteiraRecebedor().getId(), dados.amount(),msgNotificacao);
 		}
-
 	}
 
 	private Transacao inconsistencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {
@@ -66,7 +65,7 @@ public class CarteiraService {
 		return trans;
 	}
 
-	private CarteiraTransacaoPair recuperarEIniciarTransferencia(TransacaoDTORequest dados) {
+	private CarteiraTransacaoCarteiras recuperarEIniciarTransferencia(TransacaoDTORequest dados) {
 
 		// Localizo o usuario
 		var usuarioPagante = usuarioService.findById(dados.idPagante());
@@ -80,7 +79,7 @@ public class CarteiraService {
 		carteiraPagante.transferir(dados.amount());
 		carteiraRecebedor.receber(dados.amount());
 
-		CarteiraTransacaoPair carteiraTransacaoPair = new CarteiraTransacaoPair(carteiraPagante, carteiraRecebedor);
+		CarteiraTransacaoCarteiras carteiraTransacaoPair = new CarteiraTransacaoCarteiras(carteiraPagante, carteiraRecebedor);
 
 		return carteiraTransacaoPair;
 	}
@@ -94,7 +93,7 @@ public class CarteiraService {
 		 return retorno;
 	}
 	
-	private Transacao respostaPositivaFinalizarTransferencia(CarteiraTransacaoPair carteiraTransacaoPair,TransacaoDTORequest dados) {
+	private Transacao respostaPositivaFinalizarTransferencia(CarteiraTransacaoCarteiras carteiraTransacaoPair,TransacaoDTORequest dados) {
 		/*Se o autorizador externo der o aval eu salvo a operação no banco de dados*/
 		repository.saveAll(Arrays.asList(carteiraTransacaoPair.getCarteiraPagante(),carteiraTransacaoPair.getCarteiraRecebedor()));
 
