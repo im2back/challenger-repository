@@ -1,5 +1,8 @@
 # Desafio Back-end PicPay
-[![NPM](https://img.shields.io/npm/l/react)](https://github.com/im2back/Voll.med/blob/main/LICENSE) 
+[![NPM](https://img.shields.io/npm/l/react)](https://github.com/im2back/Voll.med/blob/main/LICENSE)  
+<br>
+##  !!! OBSERVAÇÃO !!!    :    O desafio proposto já está "concluído", porém como desafio pessoal vou continuar implementando novas funcionalidades e melhorias. O proximo passo é a implementação do spring security  JWT.
+<br>
 
 # Sobre o projeto(Proposta do desafio)
 ### Link do desafio original :  https://github.com/PicPay/picpay-desafio-backend
