@@ -40,8 +40,6 @@ public class CarteiraService {
 		validadores.forEach(v -> v.validar(dados));
 		/* recupero os usuarios e suas carteiras e inicío a trasnferencia */
 		CarteiraTransacaoPair carteiraTransacaoPair = recuperarEIniciarTransferencia(dados);
-
-	
 		
 		/* antes de finalizar e salvar a operação de transferencia na database eu consulto um serviço externo */
 		if (transacaoService.autorizarTransacao(carteiraTransacaoPair.getCarteiraPagante(), dados.amount()) == true) {

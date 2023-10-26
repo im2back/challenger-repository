@@ -1,7 +1,6 @@
 package github.io.im2back.challenger.service;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,11 +59,7 @@ public class TransacaoService {
 		Usuario usuario = usuarioService.findById(id);
 		var idCarteira = usuario.getCarteira().getId();
 		List<Transacao> list = repository.listarTransacaoPorUsuario(idCarteira);
-		List<ListarTransacaoDTOResponse> listResponse = new ArrayList<>();
-		for(Transacao x : list) {
-		var element = new ListarTransacaoDTOResponse(x);
-		listResponse.add(element);
-		}
+		var listResponse = list.stream().map(ListarTransacaoDTOResponse:: new).toList();
 			return listResponse;
 	}
 }
