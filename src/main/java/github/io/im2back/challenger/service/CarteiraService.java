@@ -46,14 +46,14 @@ public class CarteiraService {
 							return new TransacaoDTOResponse(trans.getId(), carteiraTransacaoCarteiras.getCarteiraPagante().getId(),
 									carteiraTransacaoCarteiras.getCarteiraRecebedor().getId(), dados.amount(), msgNotificacao );
 		} else {
-			Transacao trans = inconsistencia(carteiraTransacaoCarteiras.getCarteiraPagante(),carteiraTransacaoCarteiras.getCarteiraRecebedor(), dados.amount());
+			Long idDaTransacao = cancelarTransferencia(carteiraTransacaoCarteiras.getCarteiraPagante(),carteiraTransacaoCarteiras.getCarteiraRecebedor(), dados.amount());
 				String msgNotificacao = enviarNotificacao(dados, "transferência falhou","falha no recebimento");
-						return new TransacaoEstornoDTOResponse(trans.getId(), "Falha na operação",carteiraTransacaoCarteiras.getCarteiraPagante().getId(),
+						return new TransacaoEstornoDTOResponse(idDaTransacao, "Falha na operação",carteiraTransacaoCarteiras.getCarteiraPagante().getId(),
 						carteiraTransacaoCarteiras.getCarteiraRecebedor().getId(), dados.amount(),msgNotificacao);
 		}
 	}
 
-	private Transacao inconsistencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {
+	private Long cancelarTransferencia(Carteira pagante, Carteira recebedor, BigDecimal amount) {
 		// desfaz a operação que está intransiente
 		recebedor.transferir(amount);
 		pagante.receber(amount);
@@ -62,7 +62,7 @@ public class CarteiraService {
 		Transacao trans = new Transacao(amount, recebedor, pagante, TipoDaTransacao.CANCELADA_ESTORNADA);
 		transacaoService.save(trans);
 
-		return trans;
+		return trans.getId();
 	}
 
 	private CarteiraTransacaoCarteiras recuperarEIniciarTransferencia(TransacaoDTORequest dados) {
